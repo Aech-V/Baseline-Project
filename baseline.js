@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, getDocs, collection, addDoc, serverTimestamp, onSnapshot, query, orderBy, limit, deleteDoc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, updateProfile, deleteUser } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, updateProfile, deleteUser, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
 // ==========================================
 // FIREBASE CONFIGURATION & INITIALIZATION
@@ -309,9 +309,34 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ==========================================
+// SSO REDIRECT CATCHER 
+// ==========================================
+getRedirectResult(auth).then(async (result) => {
+    sessionStorage.removeItem('baseline_pending_redirect');
+    
+    if (result) {
+        localStorage.setItem('baseline_active_view', 'mainDashboard');
+        await createBaselineProfile(result.user, "google_sso");
+        switchMasterView('dashboard-shell');
+    }
+}).catch((error) => {
+    sessionStorage.removeItem('baseline_pending_redirect');
+    console.error("SSO Redirect Error:", error);
+    
+    switchMasterView('login-view');
+    if (document.getElementById('login-globalError')) {
+        document.getElementById('login-globalError').textContent = "Google Sign-In was interrupted.";
+        document.getElementById('login-globalError').style.display = "block";
+    }
+});
+
+// ==========================================
 // AUTHENTICATION & USER MANAGEMENT
 // ==========================================
 onAuthStateChanged(auth, async (user) => {
+    if (sessionStorage.getItem('baseline_pending_redirect')) {
+        return; 
+    }
     if (user) {
         globalUserId = user.uid;
         
@@ -525,21 +550,31 @@ regForm?.addEventListener('submit', async (e) => {
 });
 
 const regGoogleBtn = document.getElementById('reg-googleBtn');
+const regGoogleText = document.getElementById('reg-googleText');
 regGoogleBtn?.addEventListener('click', async () => {
     if (regGlobalError) regGlobalError.style.display = "none";
-    const originalText = regGoogleBtn.innerHTML;
-    regGoogleBtn.innerHTML = "Opening Secure Gateway...";
+    const originalText = regGoogleText.textContent;
+    regGoogleText.textContent = "Opening Secure Gateway...";
     regGoogleBtn.disabled = true;
 
     try {
         localStorage.setItem('baseline_active_view', 'mainDashboard');
-        const result = await signInWithPopup(auth, googleProvider);
-        await createBaselineProfile(result.user, "google_sso");
-        regGoogleBtn.innerHTML = "Baseline Established!";
-        regGoogleBtn.style.backgroundColor = "#A3CC00"; 
+        
+        // Use Smart Detection: If on mobile, Redirect. If on desktop, Popup.
+        if (window.innerWidth <= 768 || /Mobi|Android/i.test(navigator.userAgent)) {
+            sessionStorage.setItem('baseline_pending_redirect', 'true');
+            await signInWithRedirect(auth, googleProvider);
+            // Note: The code stops here because the page redirects.
+        } else {
+            const result = await signInWithPopup(auth, googleProvider);
+            await createBaselineProfile(result.user, "google_sso");
+            regGoogleBtn.innerHTML = "Baseline Established!";
+            regGoogleBtn.style.backgroundColor = "#A3CC00"; 
+            switchMasterView('dashboard-shell');
+        }
     } catch (error) {
         showGlobalError(regGlobalError, error.code === 'auth/popup-closed-by-user' ? "Cancelled." : "Google Sign-In failed.");
-        regGoogleBtn.innerHTML = originalText;
+        regGoogleBtn.innerHTML = "Sign up with Google";
         regGoogleBtn.disabled = false;
     }
 });
@@ -553,6 +588,7 @@ const loginForm = document.getElementById('login-Form');
 const loginSubmitBtn = document.getElementById('login-submitBtn');
 const loginGlobalError = document.getElementById('login-globalError');
 const loginGoogleBtn = document.getElementById('login-googleBtn');
+const loginGoogleText = document.getElementById('login-googleText');
 
 loginEmailInput?.addEventListener('input', (e) => {
     if (emailRegex.test(e.target.value)) loginEmailCheckmark?.classList.add('active');
@@ -590,19 +626,30 @@ loginForm?.addEventListener('submit', async (e) => {
 
 loginGoogleBtn?.addEventListener('click', async () => {
     if (loginGlobalError) loginGlobalError.style.display = "none";
-    const originalText = loginGoogleBtn.innerHTML;
-    loginGoogleBtn.innerHTML = "Opening Secure Gateway...";
+    const originalText = loginGoogleText.textContent;
+    loginGoogleText.textContent = "Opening Secure Gateway...";
     loginGoogleBtn.disabled = true;
 
     try {
         localStorage.setItem('baseline_active_view', 'mainDashboard');
-        const result = await signInWithPopup(auth, googleProvider);
-        await createBaselineProfile(result.user, "google_sso");
-        loginGoogleBtn.innerHTML = "Access Granted";
-        loginGoogleBtn.style.backgroundColor = "#A3CC00"; 
+
+        
+        
+        // Use Smart Detection: If on mobile, Redirect. If on desktop, Popup.
+        if (window.innerWidth <= 768 || /Mobi|Android/i.test(navigator.userAgent)) {
+            sessionStorage.setItem('baseline_pending_redirect', 'true');
+            await signInWithRedirect(auth, googleProvider);
+            // Note: The code stops here because the page redirects.
+        } else {
+            const result = await signInWithPopup(auth, googleProvider);
+            await createBaselineProfile(result.user, "google_sso");
+            loginGoogleBtn.innerHTML = "Access Granted";
+            loginGoogleBtn.style.backgroundColor = "#A3CC00"; 
+            switchMasterView('dashboard-shell');
+        }
     } catch (error) {
         showGlobalError(loginGlobalError, error.code === 'auth/popup-closed-by-user' ? "Cancelled." : "Google Sign-In failed.");
-        loginGoogleBtn.innerHTML = originalText;
+        loginGoogleBtn.innerHTML = "Sign in with Google";
         loginGoogleBtn.disabled = false;
     }
 });
