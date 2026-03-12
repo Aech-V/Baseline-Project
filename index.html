@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baseline</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./baseline.css">
+</head>
+<body class="dashboard-body">
+
+    <div id="splash-view" class="view-container d-flex flex-column justify-content-center align-items-center">
+        <div class="background-circuitry" id="bg-circuitry"></div>
+        <div class="logo-wrapper" id="logo-wrap">
+            <img class="logo dormant-logo brand-icon" alt="Baseline Dormant">
+            <img class="logo active-logo brand-icon" id="logo-active" alt="Baseline Active">
+        </div>
+        <h1 class="brand-text" id="brand-text">Baseline</h1>
+    </div>
+
+    <div id="register-view" class="view-container d-none auth-layout d-flex flex-column align-items-center">
+        <main class="auth-container d-flex flex-column px-3">
+            <img alt="Baseline Icon" class="brand-icon top-icon">
+            <h1>Build your Baseline.</h1>
+            <p class="sub-header">Track daily habits. Measure your consistency.</p>
+
+            <form id="reg-Form">
+                <div class="input-wrapper">
+                    <input type="email" id="reg-emailInput" class="baseline-input" placeholder="name@domain.com" required>
+                    <svg class="valid-checkmark" id="reg-emailCheckmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                    </svg>
+                </div>
+
+                <div class="input-wrapper">
+                    <input type="password" id="reg-passwordInput" class="baseline-input" placeholder="Create a password" required>
+                    <button type="button" id="reg-togglePasswordBtn" class="toggle-password-btn" aria-label="Show password">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                        </svg>
+                    </button>
+                    <svg id="reg-passwordCheckmark" class="valid-checkmark-password" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                    </svg>
+                    <div class="strength-meter-container" id="reg-meterContainer">
+                        <div class="strength-meter">
+                            <div class="strength-segment" id="seg-1"></div>
+                            <div class="strength-segment" id="seg-2"></div>
+                            <div class="strength-segment" id="seg-3"></div>
+                            <div class="strength-segment" id="seg-4"></div>
+                        </div>
+                        <div class="strength-label" id="reg-strengthLabel">Awaiting input...</div>
+                    </div>
+                    <div class="diagnostic-msg" id="reg-passwordError"></div>
+                </div>
+
+                <div class="input-wrapper">
+                    <input type="password" id="reg-passwordConfirm" class="baseline-input" placeholder="Confirm your password" required>
+                    <button type="button" id="reg-toggleConfirmBtn" class="toggle-password-btn" aria-label="Show confirm password">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                        </svg>
+                    </button>
+                    <svg id="reg-confirmCheckmark" class="valid-checkmark-password" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                    </svg>
+                </div>
+
+                <div class="diagnostic-msg text-center mb-3" id="reg-globalError" style="font-size: 14px;"></div>
+                <button type="submit" class="btn-primary-custom" id="reg-submitBtn">Start Tracking</button>
+            </form>
+
+            <div class="sso-divider"><span>or</span></div>
+
+            <button type="button" class="btn-sso" id="reg-googleBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.16 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+                Continue with Google
+            </button>
+
+            <div class="login-prompt">
+                <span>Already established your Baseline?</span>
+                <a href="#" class="login-link switch-to-login">Sign In</a>
+            </div>
+        </main>
+    </div>
+
+    <div id="login-view" class="view-container d-none auth-layout d-flex flex-column align-items-center">
+        <main class="auth-container d-flex flex-column px-3">
+            <img alt="Baseline Icon" class="brand-icon top-icon">
+            <h1>Welcome back.</h1>
+            <p class="sub-header">Access your Baseline. Continue your streak.</p>
+
+            <form id="login-Form">
+                <div class="input-wrapper">
+                    <input type="email" id="login-emailInput" class="baseline-input" placeholder="name@domain.com" required>
+                    <svg class="valid-checkmark" id="login-emailCheckmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                    </svg>
+                </div>
+
+                <div class="input-wrapper">
+                    <input type="password" id="login-passwordInput" class="baseline-input" placeholder="Enter your password" required>
+                    <button type="button" id="login-togglePasswordBtn" class="toggle-password-btn" aria-label="Show password">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="diagnostic-msg text-center mb-3" id="login-globalError" style="font-size: 14px;"></div>
+                <button type="submit" class="btn-primary-custom" id="login-submitBtn">Access Baseline</button>
+            </form>
+
+            <div class="sso-divider"><span>or</span></div>
+
+            <button type="button" class="btn-sso" id="login-googleBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.16 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+                Continue with Google
+            </button>
+            
+            <div class="login-prompt">
+                <span>Need to establish a Baseline?</span>
+                <a href="#" class="login-link switch-to-register">Sign Up</a>
+            </div>
+        </main>
+    </div>
+
+    <div id="dashboard-shell" class="app-shell d-none">
+        
+        <aside class="baseline-sidebar" id="sidebar">
+            <div class="sidebar-header d-flex align-items-center gap-2">
+                <img alt="Baseline Icon" class="nav-icon brand-icon" id="sidebarIcon" style="display: none;">
+                <span class="nav-brand-text">Baseline</span>
+                <button class="btn-icon mobile-close-btn d-md-none" id="closeSidebarBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item" data-target="mainDashboard">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="#" class="nav-item" data-target="mainHabitsLog">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                    </svg>
+                    Habits Log
+                </a>
+                <a href="#" class="nav-item" data-target="mainAnalytics">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
+                    Analytics
+                </a>
+                <a href="#" class="nav-item" data-target="mainSettings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    Settings
+                </a>
+            </nav>
+
+            <div class="sidebar-footer mt-auto px-3 pb-4">
+                <button class="btn-logout w-100 d-flex justify-content-center align-items-center gap-2 py-2" id="logoutBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    End Session
+                </button>
+            </div>
+        </aside>
+
+        <div class="main-wrapper">
+            
+            <header class="baseline-header d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn-icon d-md-none" id="mobileMenuBtn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-pure)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    <h2 class="header-title mb-0" id="headerTitle">Dashboard</h2>
+                </div>
+                
+                <div class="d-flex align-items-center gap-3 position-relative">
+                    <button class="btn-icon position-relative" id="notificationBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        <span class="notification-badge d-none" id="notificationBadge"></span>
+                    </button>
+
+                    <div class="custom-popover notification-popover d-none" id="notificationPopover">
+                        <div class="d-flex justify-content-between align-items-center mb-3 px-1">
+                            <h4 class="mb-0 text-pure" style="font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">System Alerts</h4>
+                            <button class="btn-text-action text-muted" style="font-size: 11px; padding: 0;" id="markReadBtn">Mark all read</button>
+                        </div>
+                        <div class="notification-list" id="notificationList"></div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="dashboard-content container-fluid p-4 p-md-5 d-none" id="mainDashboard">
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <div class="bento-card focus-card d-flex flex-column justify-content-center align-items-center text-center">
+                            <div class="w-100 d-flex justify-content-between px-3 pt-3 position-absolute top-0">
+                                <svg id="focusHistoryBtn" class="focus-top-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                                </svg>
+                                <svg id="focusStatsBtn" class="focus-top-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                            </div>
+                            <h2 class="focus-title mt-4 mb-4">Focus Mode</h2>
+                            <button class="btn-focus-start" id="initFocusCardBtn">Initialize Session</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <div class="daily-baseline-container position-relative" id="dailyBaselineClickTarget" style="cursor: pointer;">
+                            <div class="d-flex justify-content-between align-items-end mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyber-yellow)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                    </svg>
+                                    <span class="baseline-label mb-0">Daily Baseline</span>
+                                </div>
+                                <span class="baseline-stats" id="dailyProgressText">0 of 0 Protocols Executed</span>
+                            </div>
+                            <div class="baseline-track">
+                                <div class="baseline-fill" id="dailyProgressBar"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4 align-items-end">
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        <h3 class="section-title mb-0">Active Protocols</h3>
+                        <button class="btn-text-action" id="addHabitBtn">+ Add Habit</button>
+                    </div>
+                </div>
+
+                <div class="row g-3" id="habitList">
+                    <div class="col-12 text-center py-5" id="emptyStateMessage">
+                        <p class="text-muted mb-0" style="font-size: 16px;">No active protocols established yet.</p>
+                        <p class="text-muted mt-2" style="font-size: 14px;">Click "+ Add Habit" to begin tracking.</p>
+                    </div>
+                </div>
+
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <div class="bento-card p-0" id="diagnosticsClickTarget" style="overflow: hidden; cursor: pointer; transition: all 0.2s ease;">
+                            <div class="row g-0">
+                                <div class="col-12 col-md-4 p-4 border-stat-column">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <span style="font-size: 16px;">🔥</span>
+                                        <span class="stat-label mb-0" style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em;">Apex Streak</span>
+                                    </div>
+                                    <div class="text-pure" style="font-size: 32px; font-weight: 700; line-height: 1;">
+                                        <span id="hudApexStreak">0</span> 
+                                        <span class="text-muted" style="font-size: 14px; font-weight: 500;">Days</span>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-4 p-4 border-stat-column">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <span style="font-size: 16px;">⏱️</span>
+                                        <span class="stat-label mb-0" style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em;">Deep Work Logged</span>
+                                    </div>
+                                    <div class="text-pure" style="font-size: 32px; font-weight: 700; line-height: 1;">
+                                        <span id="hudFocusTime">0</span> 
+                                        <span class="text-muted" style="font-size: 14px; font-weight: 500;">Mins</span>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-4 p-4 d-flex flex-column justify-content-center">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <div class="diagnostic-indicator" id="hudStatusIndicator"></div>
+                                        <span class="stat-label mb-0" style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em;">System Status</span>
+                                    </div>
+                                    <p class="diagnostic-text mb-0" id="hudStatusText" style="font-size: 14px;">
+                                        Calibrating telemetry data...
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <main class="dashboard-content container-fluid p-4 p-md-5 d-none fade-in" id="mainSettings">
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <h1 class="greeting-text">System Configuration</h1>
+                        <p class="sub-header">Manage your account identity and interface preferences.</p>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-12 col-xl-6 d-flex flex-column gap-4">
+                        <div class="bento-card">
+                            <h3 class="section-title mb-4">Account Calibration</h3>
+                            <form id="profileUpdateForm">
+                                <div class="input-wrapper mb-4">
+                                    <label class="modal-label">Display Name</label>
+                                    <input type="text" id="settingsNameInput" class="baseline-input" placeholder="Your name">
+                                </div>
+                                <div class="input-wrapper mb-4">
+                                    <label class="modal-label">Email Address</label>
+                                    <input type="email" id="settingsEmailInput" class="baseline-input" disabled style="opacity: 0.6;">
+                                </div>
+                                <button type="submit" class="btn-primary-custom w-100" id="saveProfileBtn">Save Profile</button>
+                                <div class="diagnostic-msg text-center mt-3" id="profileSuccessMsg" style="color: var(--cyber-yellow); display: none;">Profile synchronized.</div>
+                            </form>
+                        </div>
+
+                        <div class="bento-card">
+                            <h3 class="section-title mb-4">Focus Engine Defaults</h3>
+                            <div class="d-flex gap-3 mb-3">
+                                <div class="input-wrapper flex-grow-1 mb-0">
+                                    <label class="modal-label">Work Block (mins)</label>
+                                    <input type="number" id="settingFocusWork" class="baseline-input text-center" value="25">
+                                </div>
+                                <div class="input-wrapper flex-grow-1 mb-0">
+                                    <label class="modal-label">Rest Block (mins)</label>
+                                    <input type="number" id="settingFocusRest" class="baseline-input text-center" value="5">
+                                </div>
+                            </div>
+                            <button type="button" class="btn-text-action w-100 mt-2" id="saveFocusSettingsBtn">Update Defaults</button>
+                        </div>
+
+                        <div class="bento-card">
+                            <h3 class="section-title mb-4">Time & Rhythm</h3>
+                            <div class="input-wrapper mb-4">
+                                <label class="modal-label">Start of Week</label>
+                                <select id="settingStartOfWeek" class="baseline-input">
+                                    <option value="monday">Monday</option>
+                                    <option value="tuesday">Tuesday</option>
+                                    <option value="wednesday">Wednesday</option>
+                                    <option value="thursday">Thursday</option>
+                                    <option value="friday">Friday</option>
+                                    <option value="saturday">Saturday</option>
+                                    <option value="sunday">Sunday</option>
+                                </select>
+                            </div>
+                            <div class="input-wrapper mb-0">
+                                <label class="modal-label">System Timezone Lock</label>
+                                <input type="text" id="settingTimezone" class="baseline-input" disabled style="opacity: 0.6; font-size: 14px;">
+                                <p class="text-muted mt-2 mb-0" style="font-size: 12px;">Automatically detected to ensure midnight rollovers are perfectly accurate.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-xl-6 d-flex flex-column gap-4">
+                        <div class="bento-card">
+                            <h3 class="section-title mb-4">Interface Environment</h3>
+                            <div class="d-flex justify-content-between align-items-center p-3 interface-toggle-panel">
+                                <div>
+                                    <h4 class="mb-1 text-pure" style="font-size: 15px;">Light Mode</h4>
+                                    <p class="mb-0 text-muted" style="font-size: 13px;">Invert the deep space color palette.</p>
+                                </div>
+                                <label class="baseline-switch">
+                                    <input type="checkbox" id="themeToggleSwitch">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="bento-card">
+                            <h3 class="section-title mb-4">System Notifications</h3>
+                            <div class="d-flex flex-column gap-3">
+                                <div class="d-flex justify-content-between align-items-center p-3 interface-toggle-panel">
+                                    <div>
+                                        <h4 class="mb-1 text-pure" style="font-size: 14px;">Morning Protocol Briefing</h4>
+                                        <p class="mb-0 text-muted" style="font-size: 12px;">Daily push notification at 8:00 AM.</p>
+                                    </div>
+                                    <label class="baseline-switch">
+                                        <input type="checkbox" id="notifyMorningToggle" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center p-3 interface-toggle-panel">
+                                    <div>
+                                        <h4 class="mb-1 text-pure" style="font-size: 14px;">Weekly Diagnostic Report</h4>
+                                        <p class="mb-0 text-muted" style="font-size: 12px;">Sunday evening analytics summary.</p>
+                                    </div>
+                                    <label class="baseline-switch">
+                                        <input type="checkbox" id="notifyWeeklyToggle" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bento-card danger-zone-card">
+                            <h3 class="section-title mb-4 text-danger">Data & Privacy</h3>
+                            <div class="p-3 mb-4 export-panel">
+                                <h4 class="text-pure mb-2" style="font-size: 14px;">Export Telemetry</h4>
+                                <p class="text-muted mb-3" style="font-size: 13px;">Download your entire Execution Log as a raw CSV file for external analysis.</p>
+                                <button type="button" class="btn-text-action w-100 export-btn" id="exportCsvBtn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                    Download CSV
+                                </button>
+                            </div>
+                            <div class="p-3 terminate-panel">
+                                <h4 class="mb-2 text-danger" style="font-size: 14px;">Danger Zone</h4>
+                                <p class="text-muted mb-3" style="font-size: 13px;">Permanently delete your account and wipe all telemetry from the server. This cannot be undone.</p>
+                                <button type="button" class="btn-danger-custom w-100" id="deleteAccountBtn">Terminate Account</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <main class="dashboard-content container-fluid p-4 p-md-5 d-none fade-in" id="mainHabitsLog">
+                <div class="row mb-4">
+                    <div class="col-12 d-flex justify-content-between align-items-end">
+                        <div>
+                            <h1 class="greeting-text">Execution Timeline</h1>
+                            <p class="sub-header mb-0">Your chronological audit trail and failure analysis.</p>
+                        </div>
+                        <button class="btn-text-action" id="logRetroBtn">
+                            + Log Failure Retro
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row mb-5">
+                    <div class="col-12 col-xl-8 mx-auto d-flex flex-column flex-md-row gap-3">
+                        <select id="filterTimelineType" class="baseline-input timeline-filter">
+                            <option value="all">All Entry Types</option>
+                            <option value="failure">Failures (Retros) Only</option>
+                            <option value="success">Successes Only</option>
+                        </select>
+                        <select id="filterTimelineHabit" class="baseline-input timeline-filter">
+                            <option value="all">All Protocols</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-xl-8 mx-auto">
+                        <div class="execution-timeline" id="executionTimeline">
+                            <div class="text-center py-5 text-muted">
+                                Calibrating timeline data...
+                            </div>
+                        </div>
+                        <div class="text-center mt-5">
+                            <button class="btn-text-action text-muted d-none" id="loadMoreTimelineBtn">
+                                Load Older Entries ↓
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <main class="dashboard-content container-fluid p-4 p-md-5 d-none fade-in" id="mainAnalytics"> 
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <h1 class="greeting-text">Performance Analytics</h1>
+                        <p class="sub-header mb-0">Deep telemetry and behavioral correlations.</p>
+                    </div>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-12 col-md-4">
+                        <div class="bento-card h-100 d-flex flex-column justify-content-center align-items-center text-center" id="cardBaselineScore" style="cursor: pointer; transition: all 0.2s ease;">
+                            <h3 class="section-title mb-2">Baseline Score</h3>
+                            <div class="baseline-score-display mb-1" id="analyticsScore">0%</div>
+                            <p class="text-muted mb-0" style="font-size: 13px;">Rolling 30-Day Health Metric</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 col-md-8">
+                        <div class="bento-card h-100 correlation-card" id="cardCorrelation" style="cursor: pointer; transition: all 0.2s ease;">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="correlation-icon mt-1">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--cyber-yellow)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="section-title mb-2">Behavioral Correlation Engine</h3>
+                                    <p class="diagnostic-text mb-0" style="font-size: 15px;" id="correlationText">
+                                        <strong>Insight:</strong> Calibrating telemetry...
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-12">
+                        <div class="bento-card" id="cardTopography" style="cursor: pointer; transition: all 0.2s ease;">
+                            <h3 class="section-title mb-4">365-Day Topography Map</h3>
+                            <div class="heatmap-scroll-container">
+                                <div class="heatmap-grid" id="heatmapGrid"></div>
+                            </div>
+                            <div class="d-flex justify-content-end align-items-center gap-2 mt-3" style="font-size: 12px; color: var(--text-muted);">
+                                <span>Less</span>
+                                <div class="heatmap-cell level-0" style="width: 14px; height: 14px; flex-shrink: 0;"></div>
+                                <div class="heatmap-cell level-1" style="width: 14px; height: 14px; flex-shrink: 0;"></div>
+                                <div class="heatmap-cell level-2" style="width: 14px; height: 14px; flex-shrink: 0;"></div>
+                                <div class="heatmap-cell level-3" style="width: 14px; height: 14px; flex-shrink: 0;"></div>
+                                <div class="heatmap-cell level-4" style="width: 14px; height: 14px; flex-shrink: 0;"></div>
+                                <span>More</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-12 col-xl-6">
+                        <div class="bento-card h-100" id="cardRadar" style="cursor: pointer; transition: all 0.2s ease;">
+                            <h3 class="section-title mb-4">Day-of-Week Radar</h3>
+                            <div class="css-bar-chart" id="dayOfWeekChart"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 col-xl-6">
+                        <div class="bento-card h-100" id="cardMonthlyTrend" style="cursor: pointer; transition: all 0.2s ease;">
+                            <h3 class="section-title mb-4">30-Day Execution Volume</h3>
+                            <div class="css-bar-chart" id="monthlyTrendChart"></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+        </div>
+    </div>
+
+    <div class="focus-sandbox d-none" id="focusSandbox">
+        <button class="btn-text-action text-danger position-absolute top-0 start-0 m-4" id="abortFocusBtn" style="z-index: 50;">
+            Abort Session
+        </button>
+        <div class="d-flex flex-column align-items-center justify-content-center h-100 text-center fade-in">
+            <div class="focus-phase-badge mb-4" id="focusPhaseBadge">Execution Phase 1/3</div>
+            <div class="focus-habit-display mb-3">
+                <span id="focusActiveIcon" style="font-size: 32px; margin-right: 12px;">🎯</span>
+                <span id="focusActiveName" style="font-size: 24px; font-weight: 600; color: var(--text-pure);">Protocol Name</span>
+            </div>
+            <div class="focus-timer-display" id="focusTimerDisplay">90:00</div>
+            <div class="d-flex gap-4 mt-5">
+                <button class="btn-focus-control" id="pauseFocusBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="6" y="4" width="4" height="16"></rect>
+                        <rect x="14" y="4" width="4" height="16"></rect>
+                    </svg>
+                </button>
+                <button class="btn-focus-control primary" id="skipFocusBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                        <line x1="19" y1="5" x2="19" y2="19"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay d-none" id="habitModalOverlay">
+        <div class="modal-card native-modal" id="habitModalCard">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <button type="button" class="btn-close-modal d-flex align-items-center justify-content-center" id="closeModalBtn" aria-label="Go back">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-pure)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                    </button>
+                    <h3 class="mb-0 text-pure" style="font-size: 18px; font-weight: 600;">Create habit</h3>
+                </div>
+                <button type="submit" form="newHabitForm" class="btn-text-action" id="saveHabitBtn" style="font-size: 14px; letter-spacing: 0.05em; text-transform: uppercase;">SAVE</button>
+            </div>
+
+            <form id="newHabitForm">
+                <div class="d-flex gap-3 mb-3 position-relative">
+                    <div class="input-wrapper flex-grow-1 mb-0">
+                        <label class="modal-label" style="text-transform: none; font-size: 13px;">Name</label>
+                        <input type="text" id="habitNameInput" class="baseline-input" placeholder="e.g. Exercise" required autocomplete="off">
+                    </div>
+                    
+                    <div class="input-wrapper mb-0" style="width: 72px;">
+                        <label class="modal-label" style="text-transform: none; font-size: 13px;">Icon</label>
+                        <button type="button" id="habitIconBtn" class="baseline-icon-btn">🎯</button>
+                        <input type="hidden" id="habitIconInput" value="🎯">
+                    </div>
+                    <div class="icon-grid-popover d-none" id="iconGridPopover"></div>
+                </div>
+
+                <div class="input-wrapper mb-3">
+                    <label class="modal-label" style="text-transform: none; font-size: 13px;">Question</label>
+                    <input type="text" id="habitQuestionInput" class="baseline-input" placeholder="e.g. Did you exercise today?" autocomplete="off">
+                </div>
+
+                <div class="input-wrapper mb-3 position-relative">
+                    <label class="modal-label" style="text-transform: none; font-size: 13px;">Frequency</label>
+                    <button type="button" id="frequencyDisplayBtn" class="baseline-input d-flex justify-content-between align-items-center w-100 text-start">
+                        <span id="frequencyDisplayText">Every day</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+
+                    <div class="custom-popover d-none" id="frequencyPopover">
+                        <div class="frequency-picker-container mt-0">
+                            <label class="frequency-option">
+                                <input type="radio" name="frequencyRadio" value="every_day" checked>
+                                <span class="radio-custom"></span>
+                                <span class="option-text">Every day</span>
+                            </label>
+                            <label class="frequency-option with-input">
+                                <input type="radio" name="frequencyRadio" value="every_x_days">
+                                <span class="radio-custom"></span>
+                                <span class="option-text">Every</span>
+                                <input type="number" id="freqEveryXDaysInput" class="freq-num-input" value="3" min="2" disabled>
+                                <span class="option-text">days</span>
+                            </label>
+                            <label class="frequency-option with-input">
+                                <input type="radio" name="frequencyRadio" value="times_per_week">
+                                <span class="radio-custom"></span>
+                                <input type="number" id="freqTimesPerWeekInput" class="freq-num-input" value="3" min="1" max="6" disabled>
+                                <span class="option-text">times per week</span>
+                            </label>
+                            <label class="frequency-option with-input">
+                                <input type="radio" name="frequencyRadio" value="times_per_month">
+                                <span class="radio-custom"></span>
+                                <input type="number" id="freqTimesPerMonthInput" class="freq-num-input" value="10" min="1" max="30" disabled>
+                                <span class="option-text">times per month</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-wrapper mb-3 position-relative">
+                    <label class="modal-label" style="text-transform: none; font-size: 13px;">Reminder</label>
+                    <div class="d-flex gap-3">
+                        <button type="button" id="reminderClockBtn" class="baseline-icon-btn" style="width: 56px;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--cyber-yellow)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </button>
+                        <input type="text" id="reminderDisplay" class="baseline-input flex-grow-1" value="Off" readonly style="cursor: pointer;">
+                    </div>
+
+                    <div class="custom-popover d-none" id="reminderPopover">
+                        <div class="d-flex align-items-center justify-content-center gap-2 mb-3">
+                            <input type="number" id="clockHour" class="digital-time-input" value="09" min="1" max="12">
+                            <span style="font-size: 24px; font-weight: bold; color: var(--text-pure);">:</span>
+                            <input type="number" id="clockMinute" class="digital-time-input" value="00" min="0" max="59">
+                            <select id="clockAmPm" class="digital-ampm-select">
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                            </select>
+                        </div>
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn-text-action text-muted" id="clearReminderBtn" style="color: var(--text-muted) !important;">Turn Off</button>
+                            <button type="button" class="btn-text-action" id="saveReminderBtn">Set Time</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-wrapper mb-4">
+                    <label class="modal-label" style="text-transform: none; font-size: 13px;">Notes</label>
+                    <textarea id="habitNotesInput" class="baseline-input" placeholder="(Optional)" rows="3" style="height: auto; padding-top: 16px; resize: none;"></textarea>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay d-none" id="habitDetailOverlay">
+        <div class="modal-card native-modal" id="habitDetailCard">
+            <button type="button" class="btn-close-modal position-absolute top-0 end-0 mt-3 me-3" id="closeDetailBtn" aria-label="Close details">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+
+            <div class="text-center mb-4 mt-2">
+                <div class="detail-icon" id="detailIcon">🎯</div>
+                <h3 class="detail-title mt-3 mb-1" id="detailName">Loading...</h3>
+                <p class="text-muted mb-0" id="detailQuestion" style="font-size: 14px;">...</p>
+            </div>
+
+            <div class="d-flex justify-content-between mb-4 px-2">
+                <div class="text-start">
+                    <div class="stat-label mb-1" style="font-size: 12px; color: var(--text-muted);">Frequency</div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="detailFrequency" style="font-size: 14px; color: var(--text-pure); font-weight: 500;">Every Day</span>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <div class="stat-label mb-1" style="font-size: 12px; color: var(--text-muted);">Reminder</div>
+                    <div class="d-flex align-items-center gap-2 justify-content-end">
+                        <span id="detailReminder" style="font-size: 14px; color: var(--text-pure); font-weight: 500;">Off</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-telemetry-panel mb-4">
+                <div class="d-flex justify-content-between mb-4 px-2">
+                    <div class="text-start">
+                        <div class="stat-label">Current Streak</div>
+                        <div class="stat-value" id="detailStreak">0</div>
+                    </div>
+                    <div class="text-end">
+                        <div class="stat-label">Total Executions</div>
+                        <div class="stat-value" id="detailCompletions">0</div>
+                    </div>
+                </div>
+                <div class="radar-container">
+                    <div class="stat-label mb-3 text-center">Last 7 Days</div>
+                    <div class="d-flex justify-content-between px-2" id="weeklyRadarGrid"></div>
+                </div>
+            </div>
+
+            <div class="input-wrapper mb-4">
+                <input type="text" id="successNoteInput" class="baseline-input" placeholder="Execution Note (Optional)..." style="height: 48px; font-size: 14px;" autocomplete="off">
+            </div>
+
+            <button type="button" class="btn-primary-custom d-flex justify-content-center align-items-center gap-2 mb-4" id="completeHabitBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--bg-deep-space)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                Mark Complete
+            </button>
+
+            <div class="d-flex justify-content-start">
+                <button type="button" class="btn-text-action text-danger p-0" id="deleteHabitBtn" style="font-size: 13px;">
+                    Delete Protocol
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay d-none" id="focusSetupOverlay">
+        <div class="modal-card native-modal" id="focusSetupCard">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <button type="button" class="btn-close-modal d-flex align-items-center justify-content-center" id="closeFocusSetupBtn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-pure)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                    <h3 class="mb-0 text-pure" style="font-size: 18px; font-weight: 600;">Initialize Focus</h3>
+                </div>
+            </div>
+
+            <form id="focusSetupForm">
+                <div class="input-wrapper mb-4">
+                    <label class="modal-label" style="text-transform: none; font-size: 13px;">Target Protocol</label>
+                    <select id="focusHabitSelect" class="baseline-input" required>
+                        <option value="" disabled selected>Select an active habit...</option>
+                    </select>
+                </div>
+
+                <div class="d-flex gap-3 mb-4">
+                    <div class="input-wrapper flex-grow-1 position-relative">
+                        <label class="modal-label" style="text-transform: none; font-size: 13px;">Total Duration</label>
+                        <input type="number" id="focusTotalTime" class="baseline-input" value="25" min="5" max="480" required>
+                        <span class="position-absolute text-muted" style="right: 16px; top: 40px; font-size: 14px; pointer-events: none;">mins</span>
+                    </div>
+                    <div class="input-wrapper flex-grow-1 position-relative">
+                        <label class="modal-label" style="text-transform: none; font-size: 13px;">Number of Breaks</label>
+                        <input type="number" id="focusRestCount" class="baseline-input" value="0" min="0" max="10" required>
+                        <span class="position-absolute text-muted" style="right: 16px; top: 40px; font-size: 14px; pointer-events: none;">breaks</span>
+                    </div>
+                </div>
+
+                <div class="diagnostic-card mb-4 p-3">
+                    <p class="diagnostic-text mb-0 text-center" id="focusMathPreview" style="font-size: 13px;">
+                        This splits into <strong>1 focus session</strong> of <strong>~25 minutes</strong>.
+                    </p>
+                </div>
+
+                <button type="button" class="btn-primary-custom" id="startFocusBtn">
+                    ENGAGE SESSION
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay d-none" id="dailySummaryModalOverlay">
+        <div class="modal-card native-modal" id="dailySummaryModalCard">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="mb-1 text-pure" style="font-size: 18px; font-weight: 600;">Daily Report</h3>
+                    <span id="summaryCurrentDay" style="font-size: 13px; color: var(--text-muted);">Today</span>
+                </div>
+                <button type="button" class="btn-close-modal d-flex align-items-center justify-content-center" id="closeSummaryModalBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="summary-content" style="max-height: 60vh; overflow-y: auto; padding-right: 8px;">
+                <div class="mb-4">
+                    <div class="stat-label mb-2" style="font-size: 11px;">Completed</div>
+                    <div id="summaryCompletedList" class="d-flex flex-column gap-2"></div>
+                </div>
+
+                <div>
+                    <div class="stat-label mb-2" style="font-size: 11px; color: var(--diagnostic-amber);">Pending Execution</div>
+                    <div id="summaryPendingList" class="d-flex flex-column gap-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay d-none" id="diagnosticsModalOverlay">
+        <div class="modal-card native-modal" id="diagnosticsModalCard" style="max-width: 600px;">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="mb-1 text-pure" style="font-size: 18px; font-weight: 600;">System Diagnostics</h3>
+                    <span style="font-size: 13px; color: var(--text-muted);">In-depth telemetry report</span>
+                </div>
+                <button type="button" class="btn-close-modal d-flex align-items-center justify-content-center" id="closeDiagnosticsBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-12 col-md-4">
+                    <div class="detail-stat-block h-100">
+                        <div class="stat-label mb-3" style="color: var(--cyber-yellow);">🔥 Streaks</div>
+                        <div class="mb-3">
+                            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Apex Streak</div>
+                            <div style="font-size: 20px; font-weight: 700; color: var(--text-pure);" id="diagApexStreak">0</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Active Streaks</div>
+                            <div style="font-size: 20px; font-weight: 700; color: var(--text-pure);" id="diagActiveStreaks">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <div class="detail-stat-block h-100">
+                        <div class="stat-label mb-3" style="color: #A3CC00;">⏱️ Deep Work</div>
+                        <div class="mb-3">
+                            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Logged Today</div>
+                            <div style="font-size: 20px; font-weight: 700; color: var(--text-pure);"><span id="diagTodayWork">0</span> <span style="font-size: 12px; font-weight: 500;">mins</span></div>
+                        </div>
+                        <div>
+                            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Last 7 Days</div>
+                            <div style="font-size: 20px; font-weight: 700; color: var(--text-pure);"><span id="diag7DayWork">0</span> <span style="font-size: 12px; font-weight: 500;">mins</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <div class="detail-stat-block h-100">
+                        <div class="stat-label mb-3" style="color: #4DB8FF;">📊 Status (Today)</div>
+                        <div class="mb-3 d-flex justify-content-between align-items-center">
+                            <div style="font-size: 12px; color: var(--text-muted);">Completed</div>
+                            <div style="font-size: 16px; font-weight: 700; color: var(--cyber-yellow);" id="diagCompletedToday">0</div>
+                        </div>
+                        <div class="mb-3 d-flex justify-content-between align-items-center">
+                            <div style="font-size: 12px; color: var(--text-muted);">Pending</div>
+                            <div style="font-size: 16px; font-weight: 700; color: var(--diagnostic-amber);" id="diagPendingToday">0</div>
+                        </div>
+                        <div class="pt-2 border-top" style="border-color: rgba(255,255,255,0.05) !important;">
+                            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Weekly Success Rate</div>
+                            <div style="font-size: 20px; font-weight: 700; color: var(--text-pure);" id="diagWeeklyRate">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay d-none" id="retroModalOverlay">
+        <div class="modal-card native-modal" id="retroModalCard">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <button type="button" class="btn-close-modal d-flex align-items-center justify-content-center" id="closeRetroBtn" aria-label="Go back">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-pure)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                    </button>
+                    <h3 class="mb-0 text-pure" style="font-size: 18px; font-weight: 600;">Log Failure Retro</h3>
+                </div>
+                <button type="button" class="btn-text-action" id="saveRetroBtn" style="font-size: 14px; letter-spacing: 0.05em; text-transform: uppercase;">SAVE</button>
+            </div>
+
+            <div class="input-wrapper mb-4">
+                <label class="modal-label" style="text-transform: none; font-size: 13px;">Missed Protocol</label>
+                <select id="retroHabitSelect" class="baseline-input" required>
+                    <option value="" disabled selected>Select the protocol...</option>
+                </select>
+            </div>
+
+            <div class="input-wrapper mb-4">
+                <label class="modal-label" style="text-transform: none; font-size: 13px;">Root Cause Analysis (Why did it fail?)</label>
+                <textarea id="retroNotesInput" class="baseline-input" placeholder="e.g. Too tired, traveled, poor planning..." rows="4" style="height: auto; padding-top: 16px; resize: none;"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay d-none" id="analyticsModalOverlay" style="z-index: 1050;">
+        <div class="modal-card native-modal" id="analyticsModalCard" style="max-width: 700px;">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="mb-1 text-pure" style="font-size: 18px; font-weight: 600;" id="analyticsModalTitle">Deep Dive</h3>
+                    <span style="font-size: 13px; color: var(--text-muted);" id="analyticsModalSubtitle">Detailed statistics</span>
+                </div>
+                <button type="button" class="btn-close-modal" id="closeAnalyticsModalBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div id="analyticsModalContent"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script type="module" src="./baseline.js"></script>
+</body>
+</html>
