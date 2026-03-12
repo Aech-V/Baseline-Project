@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, getDocs, collection, addDoc, serverTimestamp, onSnapshot, query, orderBy, limit, deleteDoc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, updateProfile, deleteUser } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, updateProfile, deleteUser } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
 // ==========================================
 // FIREBASE CONFIGURATION & INITIALIZATION
@@ -19,23 +19,6 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: 'select_account' });
-
-// ==========================================
-// SSO REDIRECT HANDLER
-// ==========================================
-// This catches the user returning from the Google login page
-getRedirectResult(auth).then(async (result) => {
-    if (result) {
-        // User successfully signed in via redirect
-        await createBaselineProfile(result.user, "google_sso");
-    }
-}).catch((error) => {
-    console.error("SSO Redirect Error:", error);
-    const regGlobalError = document.getElementById('reg-globalError');
-    const loginGlobalError = document.getElementById('login-globalError');
-    showGlobalError(regGlobalError, "Google Sign-In failed.");
-    showGlobalError(loginGlobalError, "Google Sign-In failed.");
-});
 
 // ==========================================
 // STATE MANAGEMENT & GLOBALS
@@ -65,6 +48,8 @@ let cachedFocusSettings = { work: 25, rest: 5 };
 let expectedEndTime = 0;
 let phaseMinutesLogged = 0;
 let activeFocusHabitId = null;
+let pauseStartTime = 0;
+let wakeLockSentinel = null;
 
 const habitIcons = [
     "🎯", "✍️", "🐪", "📈", "👏", "🏃‍♂️", "💧", "📚", 
@@ -75,6 +60,42 @@ const habitIcons = [
 ];
 
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+// ==========================================
+// SCREEN WAKE LOCK ENGINE
+// ==========================================
+async function engageWakeLock() {
+    // Check if the browser actually supports the API
+    if ('wakeLock' in navigator) {
+        try {
+            // Request the lock
+            wakeLockSentinel = await navigator.wakeLock.request('screen');
+            console.log("System Status: Wake Lock engaged. Screen will remain active.");
+        } catch (err) {
+            // The browser can refuse the lock if the battery is too low
+            console.warn(`Wake Lock denied: ${err.message}`);
+        }
+    }
+}
+
+async function releaseWakeLock() {
+    if (wakeLockSentinel !== null) {
+        try {
+            await wakeLockSentinel.release();
+            wakeLockSentinel = null;
+            console.log("System Status: Wake Lock released. Normal screen timeout restored.");
+        } catch (err) {
+            console.error(`Wake Lock release error: ${err.message}`);
+        }
+    }
+}
+
+document.addEventListener('visibilitychange', async () => {
+    // If the tab is visible again, AND we are in an active focus session
+    if (document.visibilityState === 'visible' && activeFocusHabitId !== null) {
+        await engageWakeLock();
+    }
+});
 
 // ==========================================
 // UTILITY ENGINE
@@ -557,18 +578,24 @@ regGoogleBtn?.addEventListener('click', async () => {
     try {
         localStorage.setItem('baseline_active_view', 'mainDashboard');
         
-        if (isMobileDevice()) {
-            // Mobile Flow: Redirect away from the page
-            await signInWithRedirect(auth, googleProvider);
-        } else {
-            // Desktop Flow: Open popup, wait for result, and process immediately
-            const result = await signInWithPopup(auth, googleProvider);
-            await createBaselineProfile(result.user, "google_sso");
-            regGoogleBtn.innerHTML = "Baseline Established!";
-            regGoogleBtn.style.backgroundColor = "#A3CC00"; 
-        }
+        // Universally trigger the popup
+        const result = await signInWithPopup(auth, googleProvider);
+        await createBaselineProfile(result.user, "google_sso");
+        
+        regGoogleBtn.innerHTML = "Baseline Established!";
+        regGoogleBtn.style.backgroundColor = "#A3CC00"; 
+        
     } catch (error) {
-        showGlobalError(regGlobalError, error.code === 'auth/popup-closed-by-user' ? "Cancelled." : "Google Sign-In failed.");
+        // Smart Error Handling for Mobile Pop-up Blockers
+        if (error.code === 'auth/popup-blocked') {
+            showGlobalError(regGlobalError, "Pop-up blocked. If you are in an app like Instagram or Twitter, please open Baseline in standard Safari or Chrome.");
+        } else if (error.code === 'auth/popup-closed-by-user') {
+            showGlobalError(regGlobalError, "Sign-in cancelled.");
+        } else {
+            showGlobalError(regGlobalError, "Google Sign-In failed. Please try again.");
+        }
+        
+        // Reset the button
         regGoogleBtn.innerHTML = originalText;
         regGoogleBtn.disabled = false;
     }
@@ -627,18 +654,24 @@ loginGoogleBtn?.addEventListener('click', async () => {
     try {
         localStorage.setItem('baseline_active_view', 'mainDashboard');
         
-        if (isMobileDevice()) {
-            // Mobile Flow: Redirect away from the page
-            await signInWithRedirect(auth, googleProvider);
-        } else {
-            // Desktop Flow: Open popup, wait for result, and process immediately
-            const result = await signInWithPopup(auth, googleProvider);
-            await createBaselineProfile(result.user, "google_sso");
-            loginGoogleBtn.innerHTML = "Access Granted";
-            loginGoogleBtn.style.backgroundColor = "#A3CC00"; 
-        }
+        // Universally trigger the popup
+        const result = await signInWithPopup(auth, googleProvider);
+        await createBaselineProfile(result.user, "google_sso");
+        
+        loginGoogleBtn.innerHTML = "Access Granted";
+        loginGoogleBtn.style.backgroundColor = "#A3CC00"; 
+        
     } catch (error) {
-        showGlobalError(loginGlobalError, error.code === 'auth/popup-closed-by-user' ? "Cancelled." : "Google Sign-In failed.");
+        // Smart Error Handling for Mobile Pop-up Blockers
+        if (error.code === 'auth/popup-blocked') {
+            showGlobalError(loginGlobalError, "Pop-up blocked. If you are using an in-app browser, please open Baseline in standard Safari or Chrome.");
+        } else if (error.code === 'auth/popup-closed-by-user') {
+            showGlobalError(loginGlobalError, "Sign-in cancelled.");
+        } else {
+            showGlobalError(loginGlobalError, "Google Sign-In failed. Please try again.");
+        }
+        
+        // Reset the button
         loginGoogleBtn.innerHTML = originalText;
         loginGoogleBtn.disabled = false;
     }
@@ -1603,7 +1636,7 @@ document.getElementById('focusStatsBtn')?.addEventListener('click', (e) => {
 
 closeFocusBtnDOM?.addEventListener('click', () => focusSetupDOM?.classList.add('d-none'));
 
-startFocusBtnDOM?.addEventListener('click', () => {
+startFocusBtnDOM?.addEventListener('click', async () => {
     if (!focusHabitSelectDOM) return;
     activeFocusHabitId = focusHabitSelectDOM.value; // Solves the scope leak issue
     if (!activeFocusHabitId) {
@@ -1648,8 +1681,14 @@ startFocusBtnDOM?.addEventListener('click', () => {
     
     focusSetupDOM?.classList.add('d-none');
     focusSandboxDOM?.classList.remove('d-none');
+    focusSetupDOM?.classList.add('d-none');
+    focusSandboxDOM?.classList.remove('d-none');
     
     totalMinutesLogged = 0;
+    
+    // Engage the screen lock as the session begins
+    await engageWakeLock(); 
+    
     startPhase(0);
 });
 
@@ -1686,10 +1725,8 @@ function startPhase(index) {
 }
 
 function tickTimer() {
-    if (isPaused) {
-        expectedEndTime += 1000;
-        return;
-    }
+    // Do absolutely nothing while paused. The unpause click handler will fix the math.
+    if (isPaused) return; 
     
     const now = Date.now();
     timeRemaining = Math.max(0, Math.round((expectedEndTime - now) / 1000));
@@ -1719,6 +1756,17 @@ function updateTimerDisplay() {
 
 pauseFocusBtnDOM?.addEventListener('click', () => {
     isPaused = !isPaused;
+    
+    if (isPaused) {
+        // Record the precise millisecond the session was paused
+        pauseStartTime = Date.now();
+    } else {
+        // Calculate exactly how long the timer was frozen
+        const pauseDuration = Date.now() - pauseStartTime;
+        // Shift the expected end time forward by that exact amount
+        expectedEndTime += pauseDuration;
+    }
+
     pauseFocusBtnDOM.innerHTML = isPaused ? 
         `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>` : 
         `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
@@ -1738,6 +1786,7 @@ abortFocusBtnDOM?.addEventListener('click', () => {
 
 async function endFocusSession(completedNaturally) {
     clearInterval(focusInterval);
+    await releaseWakeLock();
     focusSandboxDOM?.classList.add('d-none');
     
     // Bug fix implemented here: using activeFocusHabitId
@@ -2853,10 +2902,18 @@ exportCsvBtn?.addEventListener('click', async () => {
     }
 });
 
-const deleteAccountBtn = document.getElementById('deleteAccountBtn');
 deleteAccountBtn?.addEventListener('click', async () => {
     if (!auth.currentUser) return;
     
+    const lastSignInTime = new Date(auth.currentUser.metadata.lastSignInTime).getTime();
+    const now = Date.now();
+    const minutesSinceLogin = (now - lastSignInTime) / (1000 * 60);
+
+    if (minutesSinceLogin > 5) {
+        alert("Security Lock: To permanently delete your data, we need to verify your identity. Please log out and log back in, then try again.");
+        return; // Stop the function here. No data is touched.
+    }
+
     if (!confirm("WARNING: This will permanently delete your Baseline account and all telemetry data. This cannot be undone. Proceed?")) return;
     if (prompt("To confirm termination, type 'TERMINATE' below:") !== 'TERMINATE') return;
 
@@ -2864,20 +2921,29 @@ deleteAccountBtn?.addEventListener('click', async () => {
         deleteAccountBtn.textContent = "Terminating...";
         deleteAccountBtn.disabled = true;
 
-        const userRef = doc(db, "Users", auth.currentUser.uid);
+        const uid = auth.currentUser.uid;
+
+        const habitsSnap = await getDocs(collection(db, "Users", uid, "Habits"));
+        habitsSnap.forEach(async (docSnap) => {
+            await deleteDoc(doc(db, "Users", uid, "Habits", docSnap.id));
+        });
+
+        const logsSnap = await getDocs(collection(db, "Users", uid, "ExecutionLog"));
+        logsSnap.forEach(async (docSnap) => {
+            await deleteDoc(doc(db, "Users", uid, "ExecutionLog", docSnap.id));
+        });
+
+        const userRef = doc(db, "Users", uid);
         await deleteDoc(userRef);
+
         await deleteUser(auth.currentUser);
         
         localStorage.clear();
         window.location.reload();
         
     } catch (e) {
-        console.error(e);
-        if (e.code === 'auth/requires-recent-login') {
-            alert("Security Lock: Please log out and log back in to verify your identity before deleting this account.");
-        } else {
-            alert("Failed to terminate account. Please ensure you have a stable connection.");
-        }
+        console.error("Termination Error:", e);
+        alert("Failed to fully terminate account. Please ensure you have a stable connection.");
         deleteAccountBtn.textContent = "Terminate Account";
         deleteAccountBtn.disabled = false;
     }
